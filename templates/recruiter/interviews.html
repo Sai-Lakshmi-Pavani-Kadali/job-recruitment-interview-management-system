@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+{% from "_macros.html" import badge, render_pager, empty with context %}
+{% block title %}Interviews{% endblock %}
+{% block content %}
+<div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
+  <h1 class="h3 mb-0">Interviews</h1>
+  <div class="d-flex gap-2">
+  <a class="btn btn-primary" href="{{ url_for('recruiter.interview_pick') }}">Schedule interview</a>
+  <form method="get"><select class="form-select" name="status" aria-label="Filter by status" onchange="this.form.submit()">
+    <option value="">All statuses</option>
+    {% for s in INTERVIEW_STATUSES %}<option {{ 'selected' if s == status }}>{{ s }}</option>{% endfor %}</select></form>
+  </div>
+</div>
+{% if rows %}
+<div class="table-responsive"><table class="table align-middle">
+  <thead><tr><th>Candidate</th><th>Job</th><th>When</th><th>Mode</th><th>Status</th><th></th></tr></thead>
+  <tbody>{% for i in rows %}<tr>
+    <td><a href="{{ url_for('recruiter.application_detail', app_id=i.application_id) }}">{{ i.full_name }}</a></td>
+    <td>{{ i.title }}</td><td>{{ i.interview_date|fmt_date }}, {{ i.interview_time|fmt_time }}</td>
+    <td>{{ i.mode }}</td><td>{{ badge(i.status) }}</td>
+    <td class="text-end text-nowrap">
+      {% if i.status in ('Scheduled', 'Rescheduled') %}
+      <a class="btn btn-sm btn-outline-primary" href="{{ url_for('recruiter.reschedule_interview', iid=i.interview_id) }}">Reschedule</a>
+      <form method="post" action="{{ url_for('recruiter.interview_status', iid=i.interview_id) }}" class="d-inline">
+        {{ csrf_input() }}<input type="hidden" name="next" value="{{ request.full_path.rstrip('?') }}">
+        <button class="btn btn-sm btn-outline-success" name="status" value="Completed">Mark completed</button>
+        <button class="btn btn-sm btn-outline-danger" name="status" value="Cancelled">Cancel</button>
+      </form>
+      {% endif %}
+    </td></tr>{% endfor %}</tbody>
+</table></div>
+{{ render_pager(pager) }}
+{% else %}{{ empty('No interviews found', 'Use Schedule interview to pick a candidate and set a date and time.') }}{% endif %}
+{% endblock %}

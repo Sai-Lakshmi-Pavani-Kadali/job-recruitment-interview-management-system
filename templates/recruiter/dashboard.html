@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+{% from "_macros.html" import badge, empty with context %}
+{% block title %}Recruiter dashboard{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <h1 class="h3 mb-0">Recruitment overview</h1>
+  <a class="btn btn-primary" href="{{ url_for('recruiter.job_new') }}">Post a job</a>
+</div>
+<div class="row g-3 mb-4">
+  {% for label, val in [('Jobs posted', stats.jobs), ('Open jobs', stats.open), ('Applications', stats.applications),
+                        ('Shortlisted', stats.shortlisted), ('Selected', stats.selected), ('Upcoming interviews', stats.interviews)] %}
+  <div class="col-6 col-md-4 col-xl-2"><div class="stat"><div class="stat-num">{{ val }}</div><div class="stat-label">{{ label }}</div></div></div>
+  {% endfor %}
+</div>
+<div class="row g-4 mb-4">
+  <div class="col-lg-5"><div class="card"><div class="card-body"><h2 class="h6">Applications by status</h2><canvas id="statusChart" height="220"></canvas></div></div></div>
+  <div class="col-lg-7"><div class="card"><div class="card-body"><h2 class="h6">Applications per job</h2><canvas id="jobChart" height="150"></canvas></div></div></div>
+</div>
+<div class="row g-4">
+  <div class="col-lg-7">
+    <h2 class="h5">Latest applications</h2>
+    {% if recent %}
+    <div class="table-responsive"><table class="table align-middle">
+      <thead><tr><th>Candidate</th><th>Job</th><th>Status</th></tr></thead>
+      <tbody>{% for a in recent %}<tr>
+        <td><a href="{{ url_for('recruiter.application_detail', app_id=a.application_id) }}">{{ a.full_name }}</a></td>
+        <td>{{ a.title }}</td><td>{{ badge(a.status) }}</td></tr>{% endfor %}</tbody>
+    </table></div>
+    {% else %}{{ empty('No applications yet', 'Candidates will appear here after they apply to your jobs.') }}{% endif %}
+  </div>
+  <div class="col-lg-5">
+    <h2 class="h5">Upcoming interviews</h2>
+    {% for i in upcoming %}
+    <div class="interview-card mb-2"><div class="fw-semibold">{{ i.full_name }} · {{ i.title }}</div>
+      <div>{{ i.interview_date|fmt_date }} at {{ i.interview_time|fmt_time }} · {{ i.mode }}</div></div>
+    {% else %}{{ empty('Nothing scheduled', 'Shortlist a candidate and schedule an interview.') }}{% endfor %}
+  </div>
+</div>
+{% endblock %}
+{% block scripts %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
+<script>
+  const chart = {{ chart|tojson }};
+  new Chart(document.getElementById('statusChart'), {
+    type: 'doughnut',
+    data: { labels: chart.status_labels, datasets: [{ data: chart.status_values,
+      backgroundColor: ['#8a96a3', '#2b8fb3', '#c0504d', '#2e8b57'] }] },
+    options: { plugins: { legend: { position: 'bottom' } } }
+  });
+  new Chart(document.getElementById('jobChart'), {
+    type: 'bar',
+    data: { labels: chart.job_labels, datasets: [{ label: 'Applications', data: chart.job_values, backgroundColor: '#0e7c86' }] },
+    options: { plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, ticks: { precision: 0 } } } }
+  });
+</script>
+{% endblock %}

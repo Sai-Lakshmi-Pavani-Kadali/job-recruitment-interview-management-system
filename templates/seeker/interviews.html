@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% from "_macros.html" import badge, empty with context %}
+{% block title %}Interviews{% endblock %}
+{% block content %}
+<h1 class="h3 mb-3">Interview schedule</h1>
+{% for i in rows %}
+<div class="interview-card mb-3">
+  <div class="d-flex justify-content-between flex-wrap gap-2">
+    <div class="fw-semibold">{{ i.title }} · {{ i.company }}</div>{{ badge(i.status) }}
+  </div>
+  <div>{{ i.interview_date|fmt_date }} at {{ i.interview_time|fmt_time }} · {{ i.mode }}</div>
+  {% if i.location_link %}<div class="small text-break">Where / link: {{ i.location_link }}</div>{% endif %}
+  {% if i.details %}<div class="small mt-1 pre-wrap">{{ i.details }}</div>{% endif %}
+</div>
+{% else %}{{ empty('No interviews yet', 'When a recruiter schedules an interview, the date, time and details will appear here.') }}{% endfor %}
+{% endblock %}

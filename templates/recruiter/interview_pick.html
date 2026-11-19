@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% from "_macros.html" import badge, render_pager, empty with context %}
+{% block title %}Schedule interview{% endblock %}
+{% block content %}
+<a href="{{ url_for('recruiter.interviews') }}" class="small">&larr; Interviews</a>
+<div class="d-flex flex-wrap justify-content-between align-items-center gap-2 my-2">
+  <h1 class="h3 mb-0">Choose a candidate to interview</h1>
+  <form method="get" class="d-flex gap-2"><input class="form-control" name="q" value="{{ q }}" placeholder="Candidate or job">
+    <button class="btn btn-primary">Search</button></form>
+</div>
+{% if rows %}
+<div class="table-responsive"><table class="table align-middle">
+  <thead><tr><th>Candidate</th><th>Job</th><th>Applied</th><th>Status</th><th></th></tr></thead>
+  <tbody>{% for a in rows %}<tr>
+    <td>{{ a.full_name }}<div class="small text-muted">{{ a.email }}</div></td>
+    <td>{{ a.title }}</td><td>{{ a.applied_at|fmt_date }}</td>
+    <td>{{ badge(a.status) }}{% if a.pending %} <span class="badge text-bg-light border">Interview already scheduled</span>{% endif %}</td>
+    <td class="text-end"><a class="btn btn-sm btn-warning" href="{{ url_for('recruiter.schedule_interview', app_id=a.application_id) }}">Schedule</a></td>
+  </tr>{% endfor %}</tbody>
+</table></div>
+{{ render_pager(pager) }}
+{% else %}{{ empty('No candidates to interview yet', 'Candidates appear here after they apply to your jobs. Rejected candidates are not listed.') }}{% endif %}
+{% endblock %}

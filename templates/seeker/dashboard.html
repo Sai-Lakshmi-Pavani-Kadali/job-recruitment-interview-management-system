@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% from "_macros.html" import badge, empty with context %}
+{% block title %}Dashboard{% endblock %}
+{% block content %}
+<h1 class="h3 mb-3">Hello, {{ session.get('name') }}</h1>
+<div class="row g-3 mb-4">
+  <div class="col-6 col-md-3"><div class="stat"><div class="stat-num">{{ total }}</div><div class="stat-label">Applications</div></div></div>
+  <div class="col-6 col-md-3"><div class="stat"><div class="stat-num">{{ counts.get('Shortlisted', 0) }}</div><div class="stat-label">Shortlisted</div></div></div>
+  <div class="col-6 col-md-3"><div class="stat"><div class="stat-num">{{ counts.get('Selected', 0) }}</div><div class="stat-label">Selected</div></div></div>
+  <div class="col-6 col-md-3"><div class="stat"><div class="stat-num">{{ upcoming|length }}</div><div class="stat-label">Upcoming interviews</div></div></div>
+</div>
+{% if not resume_count %}
+<div class="alert alert-warning">You haven't uploaded a resume yet. <a href="{{ url_for('seeker.resumes') }}">Upload a PDF resume</a> so you can apply.</div>
+{% endif %}
+<div class="row g-4">
+  <div class="col-lg-7">
+    <h2 class="h5">Recent applications</h2>
+    {% if recent %}
+    <div class="table-responsive"><table class="table align-middle">
+      <thead><tr><th>Job</th><th>Applied</th><th>Status</th></tr></thead>
+      <tbody>{% for a in recent %}
+        <tr><td><a href="{{ url_for('jobs.detail', job_id=a.job_id) }}">{{ a.title }}</a><div class="small text-muted">{{ a.company }}</div></td>
+        <td>{{ a.applied_at|fmt_date }}</td><td>{{ badge(a.status) }}</td></tr>{% endfor %}</tbody>
+    </table></div>
+    {% else %}{{ empty('No applications yet', 'Browse open jobs and apply with your resume.') }}{% endif %}
+    <a class="btn btn-primary mt-2" href="{{ url_for('jobs.listing') }}">Browse jobs</a>
+  </div>
+  <div class="col-lg-5">
+    <h2 class="h5">Upcoming interviews</h2>
+    {% for i in upcoming %}
+    <div class="interview-card mb-2">
+      <div class="fw-semibold">{{ i.title }} · {{ i.company }}</div>
+      <div>{{ i.interview_date|fmt_date }} at {{ i.interview_time|fmt_time }} · {{ i.mode }}</div>
+      {% if i.location_link %}<div class="small text-break">{{ i.location_link }}</div>{% endif %}
+    </div>
+    {% else %}{{ empty('No interviews scheduled', 'When a recruiter schedules one, it will show up here.') }}{% endfor %}
+  </div>
+</div>
+{% endblock %}

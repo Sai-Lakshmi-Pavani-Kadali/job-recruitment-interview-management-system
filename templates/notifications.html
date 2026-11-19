@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% from "_macros.html" import empty with context %}
+{% block title %}Notifications{% endblock %}
+{% block content %}
+<h1 class="h3 mb-3">Notifications</h1>
+{% if rows %}
+<div class="list-group">
+  {% for n in rows %}
+  <div class="list-group-item d-flex justify-content-between gap-3 {{ 'notif-new' if not n.is_read }}">
+    <span>{{ n.message }}</span><span class="text-muted small text-nowrap">{{ n.created_at|fmt_dt }}</span>
+  </div>
+  {% endfor %}
+</div>
+{% else %}{{ empty('No notifications yet', 'Application updates and interview schedules will appear here.') }}{% endif %}
+{% endblock %}

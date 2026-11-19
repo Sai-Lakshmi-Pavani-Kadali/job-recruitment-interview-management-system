@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% block title %}{{ 'Reschedule interview' if rescheduling else 'Schedule interview' }}{% endblock %}
+{% block content %}
+{% set i = interview or {} %}
+<h1 class="h3 mb-1">{{ 'Reschedule interview' if rescheduling else 'Schedule interview' }}</h1>
+<p class="text-muted">{{ a.full_name }} · {{ a.title }}</p>
+<form method="post" class="card"><div class="card-body p-4">
+  {{ csrf_input() }}
+  <div class="row g-3">
+    <div class="col-md-4"><label class="form-label" for="interview_date">Date</label>
+      <input class="form-control" type="date" id="interview_date" name="interview_date" min="{{ today }}"
+             value="{{ i.get('interview_date', '') }}" required></div>
+    <div class="col-md-4"><label class="form-label" for="interview_time">Time</label>
+      <input class="form-control" type="time" id="interview_time" name="interview_time"
+             value="{{ i.get('interview_time', '')|fmt_time }}" required></div>
+    <div class="col-md-4"><label class="form-label" for="mode">Mode</label>
+      <select class="form-select" id="mode" name="mode">
+        {% for m in INTERVIEW_MODES %}<option {{ 'selected' if i.get('mode') == m }}>{{ m }}</option>{% endfor %}</select></div>
+    <div class="col-12"><label class="form-label" for="location_link">Meeting link or address</label>
+      <input class="form-control" id="location_link" name="location_link" value="{{ i.get('location_link', '') or '' }}"></div>
+    <div class="col-12"><label class="form-label" for="details">Interview details</label>
+      <textarea class="form-control" id="details" name="details" rows="4" placeholder="Round, interviewers, documents to bring">{{ i.get('details', '') or '' }}</textarea></div>
+  </div>
+  <div class="mt-4 d-flex gap-2">
+    <button class="btn btn-primary">{{ 'Save new time' if rescheduling else 'Schedule and notify candidate' }}</button>
+    <a class="btn btn-outline-secondary" href="{{ url_for('recruiter.interviews') }}">Cancel</a>
+  </div>
+</div></form>
+{% endblock %}

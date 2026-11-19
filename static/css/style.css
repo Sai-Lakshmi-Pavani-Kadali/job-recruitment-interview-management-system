@@ -1,0 +1,63 @@
+:root {
+  --ink: #16293a;
+  --paper: #f3f5f7;
+  --signal: #0e7c86;
+  --signal-dark: #0a5f67;
+  --marigold: #f2a93b;
+  --bs-primary: #0e7c86;
+  --bs-primary-rgb: 14, 124, 134;
+  --bs-link-color: #0a5f67;
+  --bs-link-hover-color: #08484e;
+  --bs-body-font-family: "Figtree", system-ui, sans-serif;
+  --bs-body-bg: var(--paper);
+  --bs-body-color: var(--ink);
+}
+h1, h2, h3, h4, h5, .navbar-brand, .stat-num {
+  font-family: "Bricolage Grotesque", "Figtree", sans-serif;
+  letter-spacing: -0.01em;
+}
+.btn-primary { --bs-btn-bg: var(--signal); --bs-btn-border-color: var(--signal); --bs-btn-hover-bg: var(--signal-dark);
+  --bs-btn-hover-border-color: var(--signal-dark); --bs-btn-active-bg: var(--signal-dark); --bs-btn-disabled-bg: var(--signal); }
+.btn-outline-primary { --bs-btn-color: var(--signal); --bs-btn-border-color: var(--signal); --bs-btn-hover-bg: var(--signal);
+  --bs-btn-hover-border-color: var(--signal); --bs-btn-active-bg: var(--signal); }
+.btn-warning { --bs-btn-bg: var(--marigold); --bs-btn-border-color: var(--marigold); --bs-btn-hover-bg: #e29a2a; --bs-btn-hover-border-color: #e29a2a; }
+.btn-check:checked + .btn-outline-primary { background: var(--signal); border-color: var(--signal); color: #fff; }
+:focus-visible { outline: 3px solid var(--marigold); outline-offset: 2px; }
+
+.site-nav { background: var(--ink); }
+.site-nav .navbar-brand { color: #fff; font-weight: 700; font-size: 1.4rem; }
+.site-nav .nav-link { color: rgba(255,255,255,.78); }
+.site-nav .nav-link:hover, .site-nav .nav-link:focus { color: #fff; }
+.site-nav .nav-link.disabled { color: rgba(255,255,255,.55); }
+.site-nav .navbar-toggler { border-color: rgba(255,255,255,.4); }
+.site-nav .navbar-toggler-icon { filter: invert(1); }
+.site-footer { padding: 1.5rem 0; color: #5b6b79; font-size: .875rem; border-top: 1px solid #dde3e8; margin-top: 3rem; }
+
+.hero { background: var(--ink); color: #fff; border-radius: 1rem; padding: 3rem 2.5rem; }
+.hero h1 { font-size: clamp(2rem, 5vw, 3.4rem); font-weight: 700; max-width: 16ch; line-height: 1.05; }
+.hero .lead { max-width: 52ch; color: rgba(255,255,255,.82); }
+.hero-search { display: grid; grid-template-columns: 2fr 1fr auto; gap: .5rem; max-width: 720px; margin: 1.5rem 0 1rem; }
+.hero-stats { color: rgba(255,255,255,.7); font-size: .95rem; }
+@media (max-width: 767px) { .hero { padding: 2rem 1.25rem; } .hero-search { grid-template-columns: 1fr; } }
+
+.card { border: 1px solid #dde3e8; border-radius: .75rem; box-shadow: none; }
+.job-card { transition: border-color .15s; }
+.job-card:hover { border-color: var(--signal); }
+.job-card h5 a { color: var(--ink); text-decoration: none; }
+.company-name { font-weight: 600; color: var(--signal-dark); font-size: .9rem; }
+.skill { display: inline-block; background: #e5eef0; color: #174a50; border-radius: .35rem; padding: .1rem .5rem; margin: 0 .25rem .25rem 0; font-size: .8rem; }
+.split-card { background: #fff; border: 1px solid #dde3e8; border-radius: .75rem; padding: 1.5rem; height: 100%; }
+.filter-bar { background: #fff; border: 1px solid #dde3e8; border-radius: .75rem; padding: .75rem; margin-left: 0; margin-right: 0; }
+.auth-card { margin-top: 1.5rem; }
+.side-card { position: sticky; top: 1rem; }
+.side-card dt { font-size: .8rem; color: #5b6b79; font-weight: 500; }
+.side-card dd { margin-bottom: .75rem; font-weight: 500; }
+.stat { background: #fff; border: 1px solid #dde3e8; border-left: 4px solid var(--signal); border-radius: .5rem; padding: .9rem 1rem; }
+.stat-num { font-size: 1.9rem; font-weight: 700; line-height: 1; }
+.stat-label { color: #5b6b79; font-size: .85rem; margin-top: .3rem; }
+.interview-card { background: #fff; border: 1px solid #dde3e8; border-left: 4px solid var(--marigold); border-radius: .5rem; padding: .75rem 1rem; }
+.empty-state { background: #fff; border: 1px dashed #b9c4cd; border-radius: .75rem; padding: 2rem; text-align: center; }
+.notif-new { border-left: 4px solid var(--marigold); background: #fffaf0; }
+.pre-wrap { white-space: pre-wrap; }
+.table { --bs-table-bg: #fff; }
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; } }

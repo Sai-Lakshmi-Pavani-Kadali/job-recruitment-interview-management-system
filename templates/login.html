@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% block title %}Log in{% endblock %}
+{% block content %}
+{% set labels = {'seeker': 'Job seeker', 'recruiter': 'Recruiter', 'admin': 'Admin'} %}
+<div class="row justify-content-center"><div class="col-md-6 col-lg-4">
+  <div class="card auth-card"><div class="card-body p-4">
+    <h1 class="h3 mb-3">Log in</h1>
+    <form method="post">
+      {{ csrf_input() }}
+      <div class="btn-group w-100 mb-3" role="group" aria-label="Account type">
+        {% for r, label in labels.items() %}
+        <input type="radio" class="btn-check" name="role" id="role-{{ r }}" value="{{ r }}" {{ 'checked' if role == r }}>
+        <label class="btn btn-outline-primary" for="role-{{ r }}">{{ label }}</label>
+        {% endfor %}
+      </div>
+      <div class="mb-3"><label class="form-label" for="identifier">Email or admin username</label>
+        <input class="form-control" id="identifier" name="identifier" required autofocus></div>
+      <div class="mb-3"><label class="form-label" for="password">Password</label>
+        <input class="form-control" type="password" id="password" name="password" required></div>
+      <button class="btn btn-primary w-100">Log in</button>
+    </form>
+    <p class="small text-muted mt-3 mb-0">New here?
+      <a href="{{ url_for('auth.register', role='seeker') }}">Create a job seeker account</a> or
+      <a href="{{ url_for('auth.register', role='recruiter') }}">a recruiter account</a>.<br>
+      Admin? <a href="{{ url_for('auth.register_admin') }}">Create an admin account</a>.</p>
+  </div></div>
+</div></div>
+{% endblock %}

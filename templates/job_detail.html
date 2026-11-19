@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+{% from "_macros.html" import badge, skills with context %}
+{% block title %}{{ job.title }}{% endblock %}
+{% block content %}
+<div class="row g-4">
+  <div class="col-lg-8">
+    <a href="{{ url_for('jobs.listing') }}" class="small">&larr; All jobs</a>
+    <h1 class="h2 mt-2 mb-1">{{ job.title }}</h1>
+    <p class="text-muted">{{ job.company }} · {{ job.location }} · {{ job.job_type }}</p>
+    <div class="mb-3">{{ skills(job.skills_required, 20) }}</div>
+    <h2 class="h5">About the role</h2>
+    <p class="pre-wrap">{{ job.description }}</p>
+    <h2 class="h5 mt-4">About {{ job.company }}</h2>
+    <p class="pre-wrap">{{ job.company_about or 'No company description added yet.' }}</p>
+    {% if job.website %}<p><a href="{{ job.website }}" target="_blank" rel="noopener noreferrer">{{ job.website }}</a></p>{% endif %}
+  </div>
+  <div class="col-lg-4">
+    <div class="card side-card"><div class="card-body">
+      <dl class="mb-3">
+        <dt>Salary</dt><dd>{{ salary_text(job) }}</dd>
+        <dt>Vacancies</dt><dd>{{ job.vacancies }}</dd>
+        <dt>Apply by</dt><dd>{{ job.deadline|fmt_date or 'Open until filled' }}</dd>
+        <dt>Posted</dt><dd>{{ job.created_at|fmt_date }}</dd>
+      </dl>
+      {% if job.status == 'Closed' or expired %}
+        <div class="alert alert-secondary mb-0">This job is no longer accepting applications.</div>
+      {% elif session.get('role') == 'seeker' %}
+        {% if applied %}
+          <div class="alert alert-info mb-0">You applied for this job. Status: {{ badge(applied.status) }}</div>
+        {% elif not resumes %}
+          <div class="alert alert-warning">Upload a PDF resume to apply.</div>
+          <a class="btn btn-primary w-100" href="{{ url_for('seeker.resumes') }}">Upload resume</a>
+        {% else %}
+          <form method="post" action="{{ url_for('seeker.apply', job_id=job.job_id) }}">
+            {{ csrf_input() }}
+            <div class="mb-3"><label class="form-label" for="resume_id">Resume</label>
+              <select class="form-select" id="resume_id" name="resume_id" required>
+                {% for r in resumes %}<option value="{{ r.resume_id }}">{{ r.original_name }} ({{ r.uploaded_at|fmt_date }})</option>{% endfor %}
+              </select></div>
+            <div class="mb-3"><label class="form-label" for="cover_letter">Cover letter (optional)</label>
+              <textarea class="form-control" id="cover_letter" name="cover_letter" rows="4" maxlength="3000"></textarea></div>
+            <button class="btn btn-primary w-100">Apply for this job</button>
+          </form>
+        {% endif %}
+      {% elif session.get('role') %}
+        <div class="alert alert-light border mb-0">Only job seeker accounts can apply.</div>
+      {% else %}
+        <a class="btn btn-primary w-100" href="{{ url_for('auth.login', role='seeker') }}">Log in to apply</a>
+        <p class="small text-muted mt-2 mb-0">No account? <a href="{{ url_for('auth.register', role='seeker') }}">Create one</a>.</p>
+      {% endif %}
+    </div></div>
+  </div>
+</div>
+{% endblock %}

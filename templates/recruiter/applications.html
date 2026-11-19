@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% from "_macros.html" import badge, render_pager, skills, empty with context %}
+{% block title %}Applications{% endblock %}
+{% block content %}
+<h1 class="h3 mb-3">Applications received</h1>
+<form method="get" class="row g-2 mb-3 filter-bar">
+  <div class="col-md-5"><select class="form-select" name="job_id" aria-label="Filter by job">
+    <option value="">All jobs</option>
+    {% for j in my_jobs %}<option value="{{ j.job_id }}" {{ 'selected' if j.job_id == job_id }}>{{ j.title }}</option>{% endfor %}</select></div>
+  <div class="col-md-4"><select class="form-select" name="status" aria-label="Filter by status">
+    <option value="">All statuses</option>
+    {% for s in STATUSES %}<option {{ 'selected' if s == status }}>{{ s }}</option>{% endfor %}</select></div>
+  <div class="col-md-3 d-grid"><button class="btn btn-primary">Filter</button></div>
+</form>
+{% if rows %}
+<div class="table-responsive"><table class="table align-middle">
+  <thead><tr><th>Candidate</th><th>Job</th><th>Applied</th><th>Status</th><th></th></tr></thead>
+  <tbody>{% for a in rows %}<tr>
+    <td><a href="{{ url_for('recruiter.application_detail', app_id=a.application_id) }}">{{ a.full_name }}</a>
+      <div class="small text-muted">{{ a.experience_years }} yr exp</div><div>{{ skills(a.skills, 3) }}</div></td>
+    <td>{{ a.title }}</td><td>{{ a.applied_at|fmt_date }}</td><td>{{ badge(a.status) }}</td>
+    <td class="text-end text-nowrap">
+      <form method="post" action="{{ url_for('recruiter.update_status', app_id=a.application_id) }}" class="d-inline">
+        {{ csrf_input() }}<input type="hidden" name="next" value="{{ request.full_path.rstrip('?') }}">
+        <button class="btn btn-sm btn-outline-success" name="status" value="Shortlisted" {{ 'disabled' if a.status == 'Shortlisted' }}>Shortlist</button>
+        <button class="btn btn-sm btn-outline-danger" name="status" value="Rejected" {{ 'disabled' if a.status == 'Rejected' }}>Reject</button>
+      </form>
+      {% if a.status != 'Rejected' %}<a class="btn btn-sm btn-warning" href="{{ url_for('recruiter.schedule_interview', app_id=a.application_id) }}">Interview</a>{% endif %}
+    </td></tr>{% endfor %}</tbody>
+</table></div>
+{{ render_pager(pager) }}
+{% else %}{{ empty('No applications found', 'Try another job or status filter.') }}{% endif %}
+{% endblock %}

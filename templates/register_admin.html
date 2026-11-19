@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% block title %}Create admin account{% endblock %}
+{% block content %}
+<div class="row justify-content-center"><div class="col-md-7 col-lg-5">
+  <div class="card auth-card"><div class="card-body p-4">
+    <h1 class="h3 mb-1">Create an admin account</h1>
+    <p class="text-muted">You need the admin key to create an admin.</p>
+    <form method="post">
+      {{ csrf_input() }}
+      <div class="mb-3"><label class="form-label" for="username">Username</label>
+        <input class="form-control" id="username" name="username" value="{{ request.form.get('username', '') }}" required></div>
+      <div class="mb-3"><label class="form-label" for="email">Email</label>
+        <input class="form-control" type="email" id="email" name="email" value="{{ request.form.get('email', '') }}" required></div>
+      <div class="row g-3 mb-3">
+        <div class="col-sm-6"><label class="form-label" for="password">Password</label>
+          <input class="form-control" type="password" id="password" name="password" minlength="6" required></div>
+        <div class="col-sm-6"><label class="form-label" for="confirm">Confirm password</label>
+          <input class="form-control" type="password" id="confirm" name="confirm" minlength="6" required></div>
+      </div>
+      <div class="mb-3"><label class="form-label" for="admin_key">Admin key</label>
+        <input class="form-control" type="password" id="admin_key" name="admin_key" required></div>
+      <button class="btn btn-primary w-100">Create admin account</button>
+    </form>
+    <p class="small text-muted mt-3 mb-0">Already an admin? <a href="{{ url_for('auth.login', role='admin') }}">Log in</a></p>
+  </div></div>
+</div></div>
+{% endblock %}

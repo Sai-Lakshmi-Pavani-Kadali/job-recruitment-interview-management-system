@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% from "_macros.html" import badge, render_pager, empty with context %}
+{% block title %}My jobs{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <h1 class="h3 mb-0">My job postings</h1>
+  <a class="btn btn-primary" href="{{ url_for('recruiter.job_new') }}">Post a job</a>
+</div>
+{% if rows %}
+<div class="table-responsive"><table class="table align-middle">
+  <thead><tr><th>Title</th><th>Location</th><th>Deadline</th><th>Applicants</th><th>Status</th><th></th></tr></thead>
+  <tbody>{% for j in rows %}<tr>
+    <td><a href="{{ url_for('jobs.detail', job_id=j.job_id) }}">{{ j.title }}</a><div class="small text-muted">{{ j.job_type }}</div></td>
+    <td>{{ j.location }}</td><td>{{ j.deadline|fmt_date or '—' }}</td>
+    <td><a href="{{ url_for('recruiter.applications', job_id=j.job_id) }}">{{ j.applicants }}</a></td>
+    <td>{{ badge(j.status) }}</td>
+    <td class="text-end text-nowrap">
+      <a class="btn btn-sm btn-outline-primary" href="{{ url_for('recruiter.job_edit', job_id=j.job_id) }}">Edit</a>
+      <form method="post" action="{{ url_for('recruiter.job_delete', job_id=j.job_id) }}" class="d-inline"
+            data-confirm="Delete this job and all of its applications?">{{ csrf_input() }}
+        <button class="btn btn-sm btn-outline-danger">Delete</button></form>
+    </td></tr>{% endfor %}</tbody>
+</table></div>
+{{ render_pager(pager) }}
+{% else %}{{ empty('No jobs posted', 'Post your first vacancy to start receiving applications.') }}{% endif %}
+{% endblock %}

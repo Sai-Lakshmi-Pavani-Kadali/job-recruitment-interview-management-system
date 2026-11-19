@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% from "_macros.html" import badge, render_pager, empty with context %}
+{% block title %}All jobs{% endblock %}
+{% block content %}
+<div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
+  <h1 class="h3 mb-0">All job postings</h1>
+  <form method="get" class="d-flex gap-2"><input class="form-control" name="q" value="{{ q }}" placeholder="Search title or company">
+    <button class="btn btn-primary">Search</button></form>
+</div>
+{% if rows %}
+<div class="table-responsive"><table class="table align-middle">
+  <thead><tr><th>Job</th><th>Recruiter</th><th>Applicants</th><th>Posted</th><th>Status</th><th></th></tr></thead>
+  <tbody>{% for j in rows %}<tr>
+    <td><a href="{{ url_for('jobs.detail', job_id=j.job_id) }}">{{ j.title }}</a><div class="small text-muted">{{ j.company }} · {{ j.location }}</div></td>
+    <td>{{ j.recruiter }}</td><td>{{ j.applicants }}</td><td>{{ j.created_at|fmt_date }}</td><td>{{ badge(j.status) }}</td>
+    <td class="text-end text-nowrap">
+      <form method="post" action="{{ url_for('admin.toggle_job', job_id=j.job_id) }}" class="d-inline">
+        {{ csrf_input() }}<input type="hidden" name="next" value="{{ request.full_path.rstrip('?') }}">
+        <button class="btn btn-sm btn-outline-secondary">{{ 'Close' if j.status == 'Open' else 'Reopen' }}</button></form>
+      <form method="post" action="{{ url_for('admin.delete_job', job_id=j.job_id) }}" class="d-inline" data-confirm="Delete this job and its applications?">
+        {{ csrf_input() }}<input type="hidden" name="next" value="{{ request.full_path.rstrip('?') }}">
+        <button class="btn btn-sm btn-outline-danger">Delete</button></form>
+    </td></tr>{% endfor %}</tbody>
+</table></div>
+{{ render_pager(pager) }}
+{% else %}{{ empty('No jobs found', 'Jobs posted by recruiters will be listed here.') }}{% endif %}
+{% endblock %}

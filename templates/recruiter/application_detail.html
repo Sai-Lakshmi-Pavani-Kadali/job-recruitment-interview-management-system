@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% from "_macros.html" import badge, skills with context %}
+{% block title %}{{ a.full_name }}{% endblock %}
+{% block content %}
+<a href="{{ url_for('recruiter.applications') }}" class="small">&larr; All applications</a>
+<div class="row g-4 mt-1">
+  <div class="col-lg-8">
+    <h1 class="h3 mb-1">{{ a.full_name }}</h1>
+    <p class="text-muted">Applied for <strong>{{ a.title }}</strong> on {{ a.applied_at|fmt_date }} · {{ badge(a.status) }}</p>
+    <dl class="row">
+      <dt class="col-sm-3">Email</dt><dd class="col-sm-9"><a href="mailto:{{ a.email }}">{{ a.email }}</a></dd>
+      <dt class="col-sm-3">Phone</dt><dd class="col-sm-9">{{ a.phone or '—' }}</dd>
+      <dt class="col-sm-3">Location</dt><dd class="col-sm-9">{{ a.location or '—' }}</dd>
+      <dt class="col-sm-3">Education</dt><dd class="col-sm-9">{{ a.education or '—' }}</dd>
+      <dt class="col-sm-3">Experience</dt><dd class="col-sm-9">{{ a.experience_years }} year{{ '' if a.experience_years == 1 else 's' }}</dd>
+      <dt class="col-sm-3">Skills</dt><dd class="col-sm-9">{{ skills(a.skills, 30) or '—' }}</dd>
+    </dl>
+    {% if a.about %}<h2 class="h6">About</h2><p class="pre-wrap">{{ a.about }}</p>{% endif %}
+    <h2 class="h6">Cover letter</h2>
+    <p class="pre-wrap">{{ a.cover_letter or 'No cover letter provided.' }}</p>
+    <h2 class="h6 mt-4">Interviews</h2>
+    {% for i in interviews %}
+      <div class="interview-card mb-2">{{ i.interview_date|fmt_date }} at {{ i.interview_time|fmt_time }} · {{ i.mode }} {{ badge(i.status) }}</div>
+    {% else %}<p class="text-muted">No interviews scheduled for this candidate.</p>{% endfor %}
+  </div>
+  <div class="col-lg-4"><div class="card side-card"><div class="card-body">
+    {% if a.filename %}
+    <a class="btn btn-outline-primary w-100 mb-3" href="{{ url_for('recruiter.download_resume', app_id=a.application_id) }}">Download resume</a>
+    {% else %}<p class="text-muted">The candidate's resume is no longer available.</p>{% endif %}
+    <form method="post" action="{{ url_for('recruiter.update_status', app_id=a.application_id) }}" class="d-grid gap-2">
+      {{ csrf_input() }}
+      {% for s in ['Shortlisted', 'Rejected', 'Selected'] %}
+      <button class="btn btn-{{ {'Shortlisted':'success','Rejected':'danger','Selected':'primary'}[s] }}" name="status" value="{{ s }}" {{ 'disabled' if a.status == s }}>Mark as {{ s }}</button>
+      {% endfor %}
+    </form>
+    <hr>
+    <a class="btn btn-warning w-100" href="{{ url_for('recruiter.schedule_interview', app_id=a.application_id) }}">Schedule interview</a>
+  </div></div></div>
+</div>
+{% endblock %}

@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% from "_macros.html" import empty with context %}
+{% block title %}Resumes{% endblock %}
+{% block content %}
+<h1 class="h3 mb-3">Your resumes</h1>
+<form method="post" enctype="multipart/form-data" class="card mb-4"><div class="card-body d-flex flex-wrap gap-3 align-items-end">
+  {{ csrf_input() }}
+  <div class="flex-grow-1"><label class="form-label" for="resume">Upload a PDF resume (max 5 MB)</label>
+    <input class="form-control" type="file" id="resume" name="resume" accept="application/pdf,.pdf" required></div>
+  <button class="btn btn-primary">Upload resume</button>
+</div></form>
+{% if rows %}
+<div class="table-responsive"><table class="table align-middle">
+  <thead><tr><th>File</th><th>Uploaded</th><th>Used in</th><th></th></tr></thead>
+  <tbody>{% for r in rows %}
+    <tr><td>{{ r.original_name }}</td><td>{{ r.uploaded_at|fmt_date }}</td>
+      <td>{{ r.used }} application{{ '' if r.used == 1 else 's' }}</td>
+      <td class="text-end text-nowrap">
+        <a class="btn btn-sm btn-outline-primary" href="{{ url_for('seeker.download_resume', resume_id=r.resume_id) }}">Download</a>
+        <form method="post" action="{{ url_for('seeker.delete_resume', resume_id=r.resume_id) }}" class="d-inline" data-confirm="Delete this resume?">
+          {{ csrf_input() }}<button class="btn btn-sm btn-outline-danger" {{ 'disabled' if r.used }}>Delete</button></form>
+      </td></tr>{% endfor %}</tbody>
+</table></div>
+{% else %}{{ empty('No resumes uploaded', 'Upload a PDF to start applying for jobs.') }}{% endif %}
+{% endblock %}

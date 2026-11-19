@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% from "_macros.html" import badge, render_pager, empty with context %}
+{% block title %}All applications{% endblock %}
+{% block content %}
+<div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
+  <h1 class="h3 mb-0">All applications</h1>
+  <form method="get"><select class="form-select" name="status" aria-label="Filter by status" onchange="this.form.submit()">
+    <option value="">All statuses</option>{% for s in STATUSES %}<option {{ 'selected' if s == status }}>{{ s }}</option>{% endfor %}</select></form>
+</div>
+{% if rows %}
+<div class="table-responsive"><table class="table align-middle">
+  <thead><tr><th>Candidate</th><th>Job</th><th>Applied</th><th>Status</th><th></th></tr></thead>
+  <tbody>{% for a in rows %}<tr>
+    <td>{{ a.full_name }}</td><td>{{ a.title }}<div class="small text-muted">{{ a.company }}</div></td>
+    <td>{{ a.applied_at|fmt_date }}</td><td>{{ badge(a.status) }}</td>
+    <td class="text-end text-nowrap">
+      <form method="post" action="{{ url_for('admin.application_status', app_id=a.application_id) }}" class="d-inline-flex gap-1">
+        {{ csrf_input() }}<input type="hidden" name="next" value="{{ request.full_path.rstrip('?') }}">
+        <select class="form-select form-select-sm" name="status" aria-label="New status">
+          {% for s in STATUSES %}<option {{ 'selected' if s == a.status }}>{{ s }}</option>{% endfor %}</select>
+        <button class="btn btn-sm btn-outline-primary">Update</button></form>
+      <form method="post" action="{{ url_for('admin.delete_application', app_id=a.application_id) }}" class="d-inline" data-confirm="Delete this application?">
+        {{ csrf_input() }}<input type="hidden" name="next" value="{{ request.full_path.rstrip('?') }}">
+        <button class="btn btn-sm btn-outline-danger">Delete</button></form>
+    </td></tr>{% endfor %}</tbody>
+</table></div>
+{{ render_pager(pager) }}
+{% else %}{{ empty('No applications found', 'Applications will appear here once candidates apply.') }}{% endif %}
+{% endblock %}

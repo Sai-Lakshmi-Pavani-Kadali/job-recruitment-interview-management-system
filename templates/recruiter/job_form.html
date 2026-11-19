@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% block title %}{{ 'Edit job' if editing else 'Post a job' }}{% endblock %}
+{% block content %}
+{% set j = job or {} %}
+<h1 class="h3 mb-3">{{ 'Edit job' if editing else 'Post a job' }}</h1>
+<form method="post" class="card"><div class="card-body p-4">
+  {{ csrf_input() }}
+  <div class="row g-3">
+    <div class="col-md-8"><label class="form-label" for="title">Job title</label>
+      <input class="form-control" id="title" name="title" value="{{ j.get('title', '') }}" required></div>
+    <div class="col-md-4"><label class="form-label" for="job_type">Job type</label>
+      <select class="form-select" id="job_type" name="job_type">
+        {% for t in JOB_TYPES %}<option {{ 'selected' if j.get('job_type') == t }}>{{ t }}</option>{% endfor %}</select></div>
+    <div class="col-md-6"><label class="form-label" for="location">Location</label>
+      <input class="form-control" id="location" name="location" value="{{ j.get('location', '') }}" required></div>
+    <div class="col-md-6"><label class="form-label" for="skills_required">Skills required</label>
+      <input class="form-control" id="skills_required" name="skills_required" value="{{ j.get('skills_required', '') or '' }}" placeholder="Python, SQL, Flask"></div>
+    <div class="col-md-3"><label class="form-label" for="salary_min">Min salary (LPA)</label>
+      <input class="form-control" type="number" step="0.1" min="0" id="salary_min" name="salary_min" value="{{ j.get('salary_min', '') or '' }}"></div>
+    <div class="col-md-3"><label class="form-label" for="salary_max">Max salary (LPA)</label>
+      <input class="form-control" type="number" step="0.1" min="0" id="salary_max" name="salary_max" value="{{ j.get('salary_max', '') or '' }}"></div>
+    <div class="col-md-2"><label class="form-label" for="vacancies">Vacancies</label>
+      <input class="form-control" type="number" min="1" id="vacancies" name="vacancies" value="{{ j.get('vacancies', 1) }}"></div>
+    <div class="col-md-4"><label class="form-label" for="deadline">Application deadline</label>
+      <input class="form-control" type="date" id="deadline" name="deadline" value="{{ j.get('deadline', '') or '' }}"></div>
+    <div class="col-12"><label class="form-label" for="description">Job description</label>
+      <textarea class="form-control" id="description" name="description" rows="7" required>{{ j.get('description', '') }}</textarea></div>
+    {% if editing %}
+    <div class="col-md-4"><label class="form-label" for="status">Status</label>
+      <select class="form-select" id="status" name="status">
+        {% for s in ['Open', 'Closed'] %}<option {{ 'selected' if j.get('status') == s }}>{{ s }}</option>{% endfor %}</select></div>
+    {% endif %}
+  </div>
+  <div class="mt-4 d-flex gap-2">
+    <button class="btn btn-primary">{{ 'Save changes' if editing else 'Post job' }}</button>
+    <a class="btn btn-outline-secondary" href="{{ url_for('recruiter.jobs') }}">Cancel</a>
+  </div>
+</div></form>
+{% endblock %}

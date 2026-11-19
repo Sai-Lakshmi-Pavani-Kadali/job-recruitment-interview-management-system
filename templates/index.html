@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% from "_macros.html" import job_card, empty with context %}
+{% block content %}
+<section class="hero">
+  <h1>Find the role. Book the interview.</h1>
+  <p class="lead">Search open jobs, apply with your resume, and follow every application through to the interview.</p>
+  <form action="{{ url_for('jobs.listing') }}" class="hero-search">
+    <input class="form-control" name="q" placeholder="Job title, skill or company" aria-label="Search jobs">
+    <input class="form-control" name="location" placeholder="Location" aria-label="Location">
+    <button class="btn btn-warning">Search jobs</button>
+  </form>
+  <p class="hero-stats mb-0"><strong>{{ stats.jobs }}</strong> open jobs · <strong>{{ stats.companies }}</strong> companies · <strong>{{ stats.seekers }}</strong> job seekers</p>
+</section>
+
+<div class="d-flex justify-content-between align-items-end mt-5 mb-3">
+  <h2 class="h4 mb-0">Latest jobs</h2>
+  <a href="{{ url_for('jobs.listing') }}">See all jobs</a>
+</div>
+<div class="row g-3">
+  {% for j in jobs %}{{ job_card(j) }}
+  {% else %}<div class="col-12">{{ empty('No jobs posted yet', 'Recruiters can post the first job after creating a company profile.') }}</div>
+  {% endfor %}
+</div>
+
+<div class="row g-4 mt-4">
+  <div class="col-md-6"><div class="split-card">
+    <h3 class="h5">Job seekers</h3>
+    <p>Build a profile, upload a PDF resume, apply in one step, and see each status change and interview time in your dashboard.</p>
+    <a class="btn btn-primary" href="{{ url_for('auth.register', role='seeker') }}">Create a job seeker account</a></div></div>
+  <div class="col-md-6"><div class="split-card">
+    <h3 class="h5">Recruiters</h3>
+    <p>Post vacancies, review applications, download resumes, shortlist candidates and schedule interviews from one place.</p>
+    <a class="btn btn-outline-primary" href="{{ url_for('auth.register', role='recruiter') }}">Create a recruiter account</a></div></div>
+</div>
+{% endblock %}

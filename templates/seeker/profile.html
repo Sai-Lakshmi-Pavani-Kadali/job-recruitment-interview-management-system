@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% block title %}Profile{% endblock %}
+{% block content %}
+<h1 class="h3 mb-3">Your profile</h1>
+<form method="post" class="card"><div class="card-body p-4">
+  {{ csrf_input() }}
+  <div class="row g-3">
+    <div class="col-md-6"><label class="form-label" for="full_name">Full name</label>
+      <input class="form-control" id="full_name" name="full_name" value="{{ user.full_name }}" required></div>
+    <div class="col-md-6"><label class="form-label">Email</label>
+      <input class="form-control" value="{{ user.email }}" disabled></div>
+    <div class="col-md-6"><label class="form-label" for="phone">Phone</label>
+      <input class="form-control" id="phone" name="phone" value="{{ user.phone or '' }}"></div>
+    <div class="col-md-6"><label class="form-label" for="location">Location</label>
+      <input class="form-control" id="location" name="location" value="{{ user.location or '' }}"></div>
+    <div class="col-md-8"><label class="form-label" for="education">Education</label>
+      <input class="form-control" id="education" name="education" value="{{ user.education or '' }}" placeholder="B.Tech Computer Science, 2026"></div>
+    <div class="col-md-4"><label class="form-label" for="experience_years">Years of experience</label>
+      <input class="form-control" type="number" min="0" max="60" id="experience_years" name="experience_years" value="{{ user.experience_years }}"></div>
+    <div class="col-12"><label class="form-label" for="skills">Skills</label>
+      <input class="form-control" id="skills" name="skills" value="{{ user.skills or '' }}" placeholder="Python, Flask, MySQL">
+      <div class="form-text">Separate skills with commas.</div></div>
+    <div class="col-12"><label class="form-label" for="about">About you</label>
+      <textarea class="form-control" id="about" name="about" rows="4">{{ user.about or '' }}</textarea></div>
+  </div>
+  <button class="btn btn-primary mt-4">Save profile</button>
+</div></form>
+{% endblock %}
